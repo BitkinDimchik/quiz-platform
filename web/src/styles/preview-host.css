@@ -1,0 +1,42 @@
+﻿/*
+ * Только маршрут /preview-host (класс body.preview-host).
+ * Vite всё равно вшивает этот файл в общий бандл из-за статичного импорта PreviewHostPage —
+ * селекторы body.host.host-quiz-viewing здесь нельзя использовать: они прячут
+ * «Итоги раунда» на живом хосте и оставляют сцену поверх таблицы.
+ */
+body.preview-host .landing-nav.topbar {
+  display: none !important;
+}
+body.preview-host #quizCard,
+body.preview-host .host-join,
+body.preview-host .host-players,
+body.preview-host #leaderboardCard {
+  display: none !important;
+}
+body.preview-host #stageCard {
+  display: block !important;
+}
+
+.preview-host-controls {
+  position: fixed;
+  z-index: 700;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: calc(100% - 24px);
+  padding: 8px;
+  border-radius: 14px;
+  background: rgba(8, 12, 22, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+}
+body.preview-fullscreen .card.host-stage {
+  padding-bottom: 88px;
+}
+.preview-host-controls .btn:disabled {
+  opacity: 0.45;
+}

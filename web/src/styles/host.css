@@ -1,0 +1,1660 @@
+/* ==========================================================================
+   Host UI (ведущий): размеры, stage, lobby, leaderboard, fullscreen round bg
+   Важно: `body.host.host-quiz-viewing` и `viewport-round-active` — оверрайды,
+   поэтому они специально идут ниже базовых правил.
+   ========================================================================== */
+
+/* Design tokens (host-only) */
+:root { --host-gap: 14px; }
+
+/* ==========================================================================
+   Base typography (host)
+   ========================================================================== */
+body.host {
+  font-size: 18px;
+}
+
+body.host .pill {
+  padding: 8px 12px;
+  font-size: 15px;
+}
+
+body.host .host-quiz__title {
+  font-size: 1.65rem;
+}
+
+body.host .host-players__head h2 {
+  font-size: 1.5rem;
+}
+
+body.host .stage-question {
+  font-size: 34px;
+}
+
+body.host #lbSub {
+  font-size: 20px;
+}
+
+/* ==========================================================================
+   Host stage: video sound button overlay
+   ========================================================================== */
+body.host.host-quiz-viewing #stageMedia.stage-media--host,
+body.host.host-quiz-viewing #stageExplanationVideo.stage-media--host {
+  position: relative;
+}
+body.host.host-quiz-viewing #btnHostVideoSound.host-video-sound-btn {
+  position: absolute;
+  z-index: 50;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 900;
+  background: rgba(0, 0, 0, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(6px);
+}
+body.host.host-quiz-viewing #btnHostVideoSound.host-video-sound-btn:hover {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.stage-media__hide-wrap {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  line-height: 0;
+  vertical-align: top;
+}
+.stage-media__hide-wrap img {
+  display: block;
+  max-width: 100%;
+}
+.stage-media__hide-rect {
+  position: absolute;
+  background: #000;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Answers (host scaling)
+   ========================================================================== */
+body.host .grid-answers .answer {
+  font-size: 22px;
+  font-weight: 600;
+  min-height: 72px;
+  padding: 5px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+body.host .grid-answers .answer:not(.answer--visual) {
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  text-align: center !important;
+}
+body.host .answer-caption,
+body.host .stage-caption,
+body.host .host-match__cap {
+  text-align: center;
+}
+/* Визуальные варианты — карточка по размеру картинки, не на всю ячейку */
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual .answer.answer--visual {
+  min-height: 0;
+  min-width: 0;
+  width: fit-content;
+  max-width: 100%;
+  justify-self: center;
+  padding: 8px !important;
+}
+
+body.host .answer-caption {
+  font-size: 17px;
+  font-weight: 600;
+  padding: 12px 14px;
+}
+
+/* Визуальные ответы: сетка по числу картинок, не столбик на всю ширину */
+body.host.host-quiz-viewing .host-stage__answers.grid-answers {
+  display: grid;
+  align-self: center;
+  justify-content: center;
+  justify-items: center;
+  width: 100%;
+  max-width: min(1320px, 100%);
+  margin-inline: auto;
+  gap: 10px;
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers:not(.grid-answers--visual) {
+  justify-items: stretch;
+  max-width: min(1100px, 100%);
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers:not(.grid-answers--visual) .answer {
+  min-height: 52px;
+  width: 100%;
+  max-width: 100%;
+  padding: 10px 14px !important;
+  /* --stage-answer-font: временное сжатие fitStageAnswers; иначе кегль из редактора */
+  font-size: var(--stage-answer-font, var(--stage-answers-font-size, clamp(26px, 4.4vmin, 34px))) !important;
+  box-sizing: border-box;
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual {
+  gap: 12px;
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers[data-cols="1"],
+body.host.host-quiz-viewing .host-stage__answers.grid-answers[data-count="1"]:not([data-cols]) {
+  grid-template-columns: minmax(0, min(760px, 100%));
+  max-width: 760px;
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers[data-cols="2"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers[data-count="2"]:not([data-cols]) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers[data-cols="3"],
+body.host.host-quiz-viewing .host-stage__answers.grid-answers[data-count="3"]:not([data-cols]) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers[data-cols="4"] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers[data-count="4"]:not([data-cols]) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers[data-cols="5"] {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers[data-count="5"]:not([data-cols]) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers[data-cols="6"] {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers[data-count="6"]:not([data-cols]) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="5"]:not([data-cols]) .answer,
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="5"]:not([data-cols]) .answer:nth-child(4),
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="5"]:not([data-cols]) .answer:nth-child(5) {
+  grid-column: auto;
+}
+
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual .answer-caption {
+  padding: 5px 10px;
+  margin-top: 5px;
+  font-size: 15px;
+  line-height: 1.2;
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="4"] .answer-caption,
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="5"] .answer-caption,
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="6"] .answer-caption {
+  font-size: 14px;
+}
+/* stage-theme задаёт .stage-answer с белой подложкой (!important) — на хосте делаем тоньше и темнее */
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual .stage-answer.answer--visual:not(.correct):not(.wrong) {
+  background: rgba(0, 0, 0, 0.28) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: none !important;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px !important;
+  min-height: 0 !important;
+  width: fit-content;
+  max-width: 100%;
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual .stage-answer.answer--visual:not(.correct):not(.wrong):not(:has(.answer-caption)) {
+  justify-content: center;
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual .stage-answer.answer--visual:not(.correct):not(.wrong) .answer-caption.stage-caption {
+  background: rgba(0, 0, 0, 0.42) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: none !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 10px !important;
+  padding: 6px 10px !important;
+  margin-top: 6px !important;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 15px !important;
+  line-height: 1.2 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75) !important;
+  font-weight: 700 !important;
+}
+body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual .answer--visual img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: var(--stage-answer-img-max-h, 250px);
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  margin-inline: auto;
+  flex-shrink: 1;
+  border-radius: 10px;
+}
+
+@media (max-width: 860px) {
+  body.host.host-quiz-viewing .host-stage__answers {
+    flex: 0 1 auto;
+    min-height: 0;
+  }
+
+  body.host.host-quiz-viewing .stage-media img,
+  body.host.host-quiz-viewing .stage-media iframe.stage-media__video-frame {
+    max-height: var(--stage-media-max-h, min(220px, 30vh));
+  }
+  body.host.host-quiz-viewing .stage-media__video-shell {
+    max-height: var(--stage-media-max-h, min(220px, 30vh));
+  }
+  body.host.host-quiz-viewing .stage-media__video-shell video {
+    background: rgba(0, 0, 0, 0.4);
+    object-fit: contain;
+  }
+
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="3"]:not([data-cols]),
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="4"]:not([data-cols]),
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="5"]:not([data-cols]),
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="6"]:not([data-cols]) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* На узких экранах возвращаем обычную сетку (2 колонки) */
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="5"] .answer,
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="5"] .answer:nth-child(4),
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="5"] .answer:nth-child(5) {
+    grid-column: auto;
+  }
+
+  /* 5–6 визуальных ответов в 2 колонки = 3 строки — баланс высоты и читаемости */
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="5"],
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="6"] {
+    gap: 6px;
+  }
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="5"] .answer--visual img,
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="6"] .answer--visual img {
+    max-width: 100%;
+    max-height: var(--stage-answer-img-max-h, 220px);
+    height: auto;
+    object-fit: contain;
+  }
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="5"] .answer-caption,
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="6"] .answer-caption {
+    padding: 5px 7px;
+    font-size: 11px;
+    line-height: 1.12;
+  }
+
+  /* 3–4 картинки в 2 колонки */
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="3"] .answer--visual img,
+  body.host.host-quiz-viewing .host-stage__answers.grid-answers--visual[data-count="4"] .answer--visual img {
+    max-width: 100%;
+    max-height: var(--stage-answer-img-max-h, 250px);
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* Плюс медиа к вопросу — медиа ниже, варианты крупнее (не меньше, чем без медиа) */
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="3"]) .stage-media img,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="3"]) .stage-media__video-shell,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="3"]) .stage-media iframe.stage-media__video-frame,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="4"]) .stage-media img,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="4"]) .stage-media__video-shell,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="4"]) .stage-media iframe.stage-media__video-frame,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="5"]) .stage-media img,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="5"]) .stage-media__video-shell,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="5"]) .stage-media iframe.stage-media__video-frame,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="6"]) .stage-media img,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="6"]) .stage-media__video-shell,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="6"]) .stage-media iframe.stage-media__video-frame {
+    max-height: var(--stage-media-max-h, min(220px, 28vh));
+  }
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="3"]) .host-stage__answers.grid-answers--visual .answer--visual img,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="4"]) .host-stage__answers.grid-answers--visual .answer--visual img,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="5"]) .host-stage__answers.grid-answers--visual .answer--visual img,
+  body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="6"]) .host-stage__answers.grid-answers--visual .answer--visual img {
+    max-width: 100%;
+    max-height: var(--stage-answer-img-max-h, 250px);
+    height: auto;
+    object-fit: contain;
+  }
+}
+
+/* Сжимаем stage-компоненты, чтобы всё помещалось по высоте */
+body.host.host-quiz-viewing .host-stage {
+  padding: 10px 12px;
+}
+body.host.host-quiz-viewing .stage-center {
+  gap: 6px;
+}
+/* Во время игры контент должен быть выше (без “центровки” по вертикали) */
+body.host.host-quiz-viewing .host-stage .stage-center {
+  justify-content: flex-start;
+  padding-top: 6px;
+}
+
+/* Вложение к вопросу: компактнее, чтобы больше места оставалось вариантам */
+body.host.host-quiz-viewing .host-stage .stage-media img,
+body.host.host-quiz-viewing .host-stage .stage-media iframe.stage-media__video-frame {
+  max-width: min(720px, 100%);
+  max-height: var(--stage-media-max-h, min(280px, 32vh));
+}
+body.host.host-quiz-viewing .host-stage .stage-media__video-shell {
+  max-width: min(720px, 100%);
+  max-height: var(--stage-media-max-h, min(280px, 32vh));
+}
+body.host.host-quiz-viewing .host-stage .stage-media__video-shell video {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  background: rgba(0, 0, 0, 0.4);
+  object-fit: contain;
+}
+
+/* Медиа + визуальные ответы: плотнее, чтобы все карточки помещались под вложением */
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="3"]),
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="4"]),
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="5"]),
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="6"]) {
+  gap: 4px;
+  padding-top: 2px;
+}
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="3"]) .host-stage__q,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="4"]) .host-stage__q,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="5"]) .host-stage__q,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="6"]) .host-stage__q {
+  padding: 6px 12px;
+}
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="3"]) .stage-media img,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="3"]) .stage-media__video-shell,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="3"]) .stage-media iframe.stage-media__video-frame,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="4"]) .stage-media img,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="4"]) .stage-media__video-shell,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="4"]) .stage-media iframe.stage-media__video-frame,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="5"]) .stage-media img,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="5"]) .stage-media__video-shell,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="5"]) .stage-media iframe.stage-media__video-frame,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="6"]) .stage-media img,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="6"]) .stage-media__video-shell,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="6"]) .stage-media iframe.stage-media__video-frame {
+  max-height: var(--stage-media-max-h, min(280px, 32vh));
+}
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="3"]) .host-stage__answers.grid-answers--visual .answer--visual img,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="4"]) .host-stage__answers.grid-answers--visual .answer--visual img,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="5"]) .host-stage__answers.grid-answers--visual .answer--visual img,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="6"]) .host-stage__answers.grid-answers--visual .answer--visual img {
+  max-width: 100%;
+  max-height: var(--stage-answer-img-max-h, 250px);
+  height: auto;
+  object-fit: contain;
+}
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="3"]) .host-stage__answers.grid-answers--visual,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="4"]) .host-stage__answers.grid-answers--visual,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="5"]) .host-stage__answers.grid-answers--visual,
+body.host.host-quiz-viewing .host-stage .stage-center:not([data-stage-swap="explanation"]):has(.stage-media:not(:empty)):has(.host-stage__answers.grid-answers--visual[data-count="6"]) .host-stage__answers.grid-answers--visual {
+  margin-top: 0;
+  gap: 6px;
+}
+
+/* Порядок: вопрос/пояснение → медиа/картинка пояснения → подпись → ответы; таймер — угол сцены */
+body.host.host-quiz-viewing .host-stage .host-stage__q { order: 0; }
+body.host.host-quiz-viewing .host-stage .host-stage__q.stage-q,
+body.host.host-quiz-viewing .host-stage .host-stage__explanation-label.stage-q {
+  font-size: var(--stage-heading-font-size, clamp(28px, 4.6vmin, 40px)) !important;
+}
+body.host.host-quiz-viewing .host-stage .host-stage__explanation-text.stage-q {
+  /* Текст пояснения намеренно мельче заголовка; семейство — из heading. */
+  font-size: clamp(18px, 2.6vmin, 22px) !important;
+  font-weight: 600 !important;
+}
+body.host.host-quiz-viewing .host-stage .host-stage__explanation-label { order: 0; }
+body.host.host-quiz-viewing .host-stage .host-stage__explanation-text { order: 0; }
+body.host.host-quiz-viewing .host-stage .stage-media { order: 1; }
+body.host.host-quiz-viewing .host-stage .host-stage__explanation--image { order: 1; }
+body.host.host-quiz-viewing .host-stage .host-stage__explanation--video { order: 1; }
+body.host.host-quiz-viewing .host-stage .host-stage__meta { order: 2; }
+body.host.host-quiz-viewing .host-stage .host-stage__answers,
+body.host.host-quiz-viewing .host-stage .host-stage__match { order: 4; }
+
+/* Reveal / round summary stack: question → explanation → «Правильный ответ» → answers */
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-reveal="1"] .host-stage__q,
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-swap="explanation"] .host-stage__q { order: 0; }
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-reveal="1"] .host-stage__explanation-label,
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-swap="explanation"] .host-stage__explanation-label,
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-reveal="1"] .host-stage__explanation-text,
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-swap="explanation"] .host-stage__explanation-text { order: 1; }
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-reveal="1"] .host-stage__explanation--image,
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-swap="explanation"] .host-stage__explanation--image,
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-reveal="1"] .host-stage__explanation--video,
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-swap="explanation"] .host-stage__explanation--video { order: 2; }
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-reveal="1"] .host-stage__meta,
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-swap="explanation"] .host-stage__meta { order: 3; }
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-reveal="1"] .host-stage__answers,
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-swap="explanation"] .host-stage__answers,
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-reveal="1"] .host-stage__match,
+body.host.host-quiz-viewing .host-stage .stage-center[data-stage-swap="explanation"] .host-stage__match { order: 4; }
+
+.host-stage__explanation-label {
+  display: none;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+.stage-center[data-stage-swap="explanation"] .host-stage__explanation-label {
+  display: none;
+}
+.host-stage__explanation {
+  width: 100%;
+  max-width: min(980px, 100%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.host-stage__explanation-text {
+  text-align: center;
+  max-width: min(980px, 100%);
+  letter-spacing: 0.01em;
+  line-height: 1.22;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+.host-stage__explanation-img {
+  width: auto;
+  max-width: min(100%, 1200px);
+  height: auto;
+  max-height: var(--stage-expl-img-max-h, min(52dvh, calc(100dvh - 240px)));
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  margin-inline: auto;
+  flex-shrink: 0;
+  border-radius: 10px;
+}
+.host-stage__explanation--image {
+  width: fit-content;
+  max-width: min(1200px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+.host-stage__explanation--video {
+  width: fit-content;
+  max-width: min(1200px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+  position: relative;
+}
+.host-stage__explanation--video .stage-media__video-shell {
+  max-width: min(100%, 1200px);
+  max-height: var(--stage-expl-img-max-h, min(52dvh, calc(100dvh - 240px)));
+}
+.host-stage__explanation--video video {
+  width: 100%;
+  height: auto;
+  max-height: var(--stage-expl-img-max-h, min(52dvh, calc(100dvh - 240px)));
+  display: block;
+  border-radius: 10px;
+}
+.stage-center[data-stage-reveal="1"] .host-stage__explanation-label,
+.stage-center[data-stage-swap="explanation"] .host-stage__explanation-label,
+.stage-center[data-stage-reveal="1"] .host-stage__explanation-text,
+.stage-center[data-stage-swap="explanation"] .host-stage__explanation-text {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 3;
+}
+.stage-center[data-stage-reveal="1"] .host-stage__explanation--image,
+.stage-center[data-stage-swap="explanation"] .host-stage__explanation--image,
+.stage-center[data-stage-reveal="1"] .host-stage__explanation--video,
+.stage-center[data-stage-swap="explanation"] .host-stage__explanation--video {
+  flex: 0 0 auto;
+  max-width: min(92%, 1200px);
+  min-height: min-content !important;
+  position: relative;
+  z-index: 2;
+}
+.stage-center[data-stage-reveal="1"] .host-stage__explanation-img,
+.stage-center[data-stage-swap="explanation"] .host-stage__explanation-img {
+  max-width: 100%;
+  max-height: var(--stage-expl-img-max-h, min(52dvh, calc(100dvh - 240px)));
+}
+.stage-center[data-stage-reveal="1"] .host-stage__meta,
+.stage-center[data-stage-swap="explanation"] .host-stage__meta {
+  flex: 0 0 auto;
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+}
+/* Keep answer tiles content-sized like during the question — do not stretch to fill the stage */
+.stage-center[data-stage-reveal="1"] .host-stage__answers,
+.stage-center[data-stage-swap="explanation"] .host-stage__answers,
+.stage-center[data-stage-reveal="1"] .host-stage__match,
+.stage-center[data-stage-swap="explanation"] .host-stage__match {
+  flex: 0 1 auto;
+  min-height: 0;
+  align-content: start;
+  position: relative;
+  z-index: 1;
+}
+.stage-center[data-stage-reveal="1"] .host-stage__answers.grid-answers:not(.grid-answers--visual) .answer,
+.stage-center[data-stage-swap="explanation"] .host-stage__answers.grid-answers:not(.grid-answers--visual) .answer {
+  min-height: 52px;
+  height: auto;
+  align-self: start;
+}
+
+body.host.host-quiz-viewing .host-stage .host-stage__explanation--image.answer--visual {
+  background: rgba(0, 0, 0, 0.28) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: none !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px !important;
+  min-height: min-content !important;
+}
+
+/* Reveal keeps the question; only question media stays hidden */
+.stage-center[data-stage-swap="explanation"] .stage-media {
+  display: none !important;
+}
+
+/* Custom question layout must not pin the reveal title mid-screen */
+.stage-center[data-stage-reveal="1"].stage-center--custom-layout > [data-stage-key="meta"],
+.stage-center[data-stage-reveal="1"].stage-center--custom-layout > [data-stage-key="prompt"],
+.stage-center[data-stage-reveal="1"].stage-center--custom-layout > [data-stage-key="explanation"],
+.stage-center[data-stage-reveal="1"].stage-center--custom-layout > [data-stage-key="explanationImage"],
+.stage-center[data-stage-reveal="1"].stage-center--custom-layout > [data-stage-key="explanationVideo"],
+.stage-center[data-stage-reveal="1"].stage-center--custom-layout > [data-stage-key="explanationLabel"],
+.stage-center[data-stage-reveal="1"].stage-center--custom-layout > .host-stage__answers,
+.stage-center[data-stage-reveal="1"].stage-center--custom-layout > .host-stage__match,
+.stage-center[data-stage-swap="explanation"].stage-center--custom-layout > [data-stage-key="meta"],
+.stage-center[data-stage-swap="explanation"].stage-center--custom-layout > [data-stage-key="prompt"],
+.stage-center[data-stage-swap="explanation"].stage-center--custom-layout > [data-stage-key="explanation"],
+.stage-center[data-stage-swap="explanation"].stage-center--custom-layout > [data-stage-key="explanationImage"],
+.stage-center[data-stage-swap="explanation"].stage-center--custom-layout > [data-stage-key="explanationVideo"],
+.stage-center[data-stage-swap="explanation"].stage-center--custom-layout > [data-stage-key="explanationLabel"],
+.stage-center[data-stage-swap="explanation"].stage-center--custom-layout > .host-stage__answers,
+.stage-center[data-stage-swap="explanation"].stage-center--custom-layout > .host-stage__match {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: min(980px, 100%) !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  inset: auto !important;
+  transform: none !important;
+}
+.stage-center[data-stage-reveal="1"].stage-center--custom-layout > [data-stage-key="meta"],
+.stage-center[data-stage-swap="explanation"].stage-center--custom-layout > [data-stage-key="meta"] {
+  width: fit-content !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.stage-center[data-stage-reveal="1"].stage-center--custom-layout > [data-stage-key="prompt"],
+.stage-center[data-stage-swap="explanation"].stage-center--custom-layout > [data-stage-key="prompt"] {
+  width: 100% !important;
+  max-width: min(980px, 100%) !important;
+}
+
+/* ==========================================================================
+   Host top UI (visibility tweaks)
+   ========================================================================== */
+/* Во время игры: верхняя панель не нужна (завершение — в меню ведущего) */
+body.host.host-quiz-viewing .landing-nav.topbar {
+  display: none !important;
+}
+
+/* Карточка итогов: максимально прозрачная (и в игре, и вне игры) */
+body.host #leaderboardCard.card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Round leaderboard typography is shared via stage-theme.css */
+
+/* Outline for leaderboard list text (round + final) */
+body.host #leaderboardCard .lb-row,
+body.host #leaderboardCard .lb-row .pill {
+  text-shadow: var(--txt-outline);
+}
+
+/* Во время показа (stage): никакой прокрутки страницы */
+body.host.host-quiz-viewing {
+  overflow: hidden;
+}
+
+/* Во время показа: stage не должен быть белой “карточкой” даже без фоновой картинки */
+body.host.host-quiz-viewing .card.host-stage {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Раскрывающееся меню ведущего (solo + живая игра) */
+.host-game-menu {
+  position: fixed;
+  right: 14px;
+  bottom: max(14px, env(safe-area-inset-bottom, 0px));
+  z-index: 660;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.host-game-menu__toggle {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.58);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.host-game-menu__toggle:hover {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.host-game-menu__toggle.is-open {
+  transform: rotate(90deg);
+}
+
+.host-game-menu__panel {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  min-width: min(240px, calc(100vw - 28px));
+  padding: 8px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+.host-game-menu__panel.is-open {
+  display: flex;
+}
+
+.host-game-menu__item {
+  width: 100%;
+  justify-content: center;
+  font-size: 14px;
+  padding: 9px 12px;
+  white-space: nowrap;
+}
+
+.host-shell {
+  display: flex;
+  justify-content: center;
+}
+
+.host-main {
+  width: 100%;
+  /* max-width: 1100px; */
+  display: flex;
+  flex-direction: column;
+  gap: var(--host-gap);
+}
+
+.host-timer-corner {
+  position: fixed;
+  right: 18px;
+  top: 18px;
+  z-index: 200;
+  padding: 10px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(230,238,252,0.16);
+  background: rgba(0,0,0,0.55);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.host-stage {
+  padding: 18px;
+}
+body.host.host-quiz-viewing .host-stage {
+  padding: 0 18px 18px 0;
+}
+.host-stage__q {
+  text-align: center;
+  max-width: min(980px, 100%);
+  font-size: var(--stage-heading-font-size, clamp(1.6rem, 3.8vmin, 2.85rem));
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.22;
+  /* Fallback: keep question readable even if body class toggles fail */
+  display: inline-block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.144);
+  border: 1px solid rgba(230,238,252,0.12);
+  backdrop-filter: blur(6px);
+}
+
+/* Таймер в углу — заголовок не заезжает под него на узкой сцене / в предпросмотре.
+   Симметричный inset, чтобы текст оставался по центру. Кастомная раскладка — у JS. */
+body.host.host-quiz-viewing
+  .stage-center:not(.stage-center--custom-layout):has(.timer-circle:not([style*="display: none"]))
+  .host-stage__q,
+body.host.host-quiz-viewing
+  .stage-center:not(.stage-center--custom-layout):has(.timer-circle:not([style*="display: none"]))
+  .host-stage__explanation-label {
+  box-sizing: border-box;
+  max-width: min(980px, calc(100% - 2 * var(--stage-timer-gutter, 140px)));
+}
+
+
+/* “Варианты ответа” (meta): визуальная тема в stage-theme.css (stage-meta),
+   здесь оставляем только раскладку/ограничение ширины через базовые правила. */
+
+/* In-game stage element look is shared via stage-theme.css */
+body.host.host-quiz-viewing .host-timer-corner {
+  font-weight: 800;
+}
+.host-stage__answers {
+  margin-top: 6px;
+  width: 100%;
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+}
+body.host .host-stage__answers--text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+body.host .host-stage__answers--text .stage-correct-texts-title,
+body.host .host-stage__answers--text .stage-correct-texts-item,
+body.host .host-stage__answers--text .stage-text-answer-hint {
+  display: block !important;
+  margin-top: 0 !important;
+}
+
+/* Matching: две строки — подсказки сверху, ответы снизу.
+   Размер картинок и плиток — адаптивный (viewport + data-count), см. ниже. */
+.host-stage__match {
+  margin-top: 6px;
+  width: 100%;
+  max-width: min(1320px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+}
+.host-match__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(8px, 1.2vmin, 14px);
+  justify-content: center;
+  width: 100%;
+}
+.host-match__tile {
+  box-sizing: border-box;
+  min-width: 96px;
+  max-width: min(100%, 420px);
+  flex: 1 1 clamp(120px, calc((100% - 48px) / 6), 280px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: clamp(6px, 1vmin, 12px);
+  border-radius: 16px;
+}
+.host-match__img {
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  /* Базово крупнее старых 140px; точная шкала — по data-count */
+  max-height: clamp(150px, min(26vmin, 32vh), 360px);
+  border-radius: 12px;
+  object-fit: contain;
+}
+/* Меньше пар — больше превью; больше пар — ужимаем, чтобы влезали в ряд */
+body.host.host-quiz-viewing .host-stage__match[data-count="1"] .host-match__tile {
+  max-width: min(100%, 720px);
+  flex: 1 1 260px;
+}
+body.host.host-quiz-viewing .host-stage__match[data-count="1"] .host-match__img {
+  max-height: clamp(200px, min(42vmin, 48vh), 560px);
+}
+body.host.host-quiz-viewing .host-stage__match[data-count="2"] .host-match__img {
+  max-height: clamp(175px, min(34vmin, 40vh), 440px);
+}
+body.host.host-quiz-viewing .host-stage__match[data-count="3"] .host-match__img {
+  max-height: clamp(160px, min(28vmin, 36vh), 360px);
+}
+body.host.host-quiz-viewing .host-stage__match[data-count="4"] .host-match__img {
+  max-height: clamp(150px, min(24vmin, 30vh), 300px);
+}
+body.host.host-quiz-viewing .host-stage__match[data-count="5"] .host-match__img,
+body.host.host-quiz-viewing .host-stage__match[data-count="6"] .host-match__img {
+  max-height: clamp(140px, min(20vmin, 26vh), 260px);
+}
+body.host.host-quiz-viewing .host-stage__match[data-count="7"] .host-match__img,
+body.host.host-quiz-viewing .host-stage__match[data-count="8"] .host-match__img {
+  max-height: clamp(120px, min(17vmin, 22vh), 220px);
+}
+.host-match__badge {
+  font-weight: 900;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: rgba(124, 58, 237, 0.2);
+}
+.host-match__badge--num {
+  background: rgba(34, 197, 94, 0.2);
+}
+.host-match__cap {
+  width: 100%;
+  margin-top: 6px;
+}
+
+@media (max-width: 860px) {
+  body.host.host-quiz-viewing .host-stage__match {
+    max-width: 100%;
+  }
+  body.host.host-quiz-viewing .host-match__tile {
+    flex: 1 1 clamp(100px, 42vw, 200px);
+    max-width: min(100%, 280px);
+  }
+  body.host.host-quiz-viewing .host-match__img {
+    max-height: min(150px, 22vh);
+  }
+  body.host.host-quiz-viewing .host-stage__match[data-count="1"] .host-match__img {
+    max-height: min(220px, 32vh);
+  }
+  body.host.host-quiz-viewing .host-stage__match[data-count="2"] .host-match__img {
+    max-height: min(170px, 26vh);
+  }
+  body.host.host-quiz-viewing .host-stage__match[data-count="3"] .host-match__img {
+    max-height: min(150px, 22vh);
+  }
+  body.host.host-quiz-viewing .host-stage__match[data-count="4"] .host-match__img,
+  body.host.host-quiz-viewing .host-stage__match[data-count="5"] .host-match__img,
+  body.host.host-quiz-viewing .host-stage__match[data-count="6"] .host-match__img {
+    max-height: min(120px, 18vh);
+  }
+}
+
+/* ==========================================================================
+   Round intro (host stage)
+   ========================================================================== */
+/* Интро квиза/раунда: крупный заголовок по центру сцены */
+.host-stage--round-intro .host-stage__q {
+  width: fit-content;
+  max-width: min(920px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+}
+.host-stage--round-intro .host-stage__meta {
+  width: fit-content;
+  max-width: min(640px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  font-size: var(--stage-labels-font-size, clamp(1rem, 2.4vmin, 1.25rem));
+  line-height: 1.45;
+  font-weight: 400;
+}
+.host-stage--round-intro .stage-center {
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+.host-stage--round-intro .stage-media:empty {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .host-stage__q {
+    font-size: var(--stage-heading-font-size, clamp(1.45rem, 4.2vw, 1.85rem));
+  }
+}
+
+/* ==========================================================================
+   Lobby / quiz card (host)
+   ========================================================================== */
+.host-quiz {
+  overflow: hidden;
+  padding: 0;
+}
+
+.host-quiz__bg {
+  height: 140px;
+  background:
+    radial-gradient(1200px 420px at 10% 20%, rgba(124, 58, 237, 0.35), transparent 60%),
+    radial-gradient(900px 480px at 90% 10%, rgba(34, 197, 94, 0.16), transparent 60%),
+    rgba(255,255,255,0.04);
+  background-size: cover;
+  background-position: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.host-quiz__body {
+  padding: 16px;
+}
+
+.host-quiz__meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.host-quiz__title {
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  font-family: var(--stage-font-family, Figtree, system-ui, sans-serif);
+}
+
+.host-quiz__sub {
+  margin-top: 6px;
+  font-size: 15px;
+  font-family: var(--stage-font-family, Figtree, system-ui, sans-serif);
+}
+
+.host-hidden {
+  display: none;
+}
+
+/* ==========================================================================
+   Join screen (QR + room code)
+   ========================================================================== */
+.host-join__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.host-join__title {
+  font-weight: 900;
+  font-size: 21px;
+  margin-top: 2px;
+}
+
+.host-join__grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.host-qr {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.14);
+  min-height: 320px;
+}
+.host-qr__box {
+  width: 260px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(230, 238, 252, 0.16);
+  overflow: hidden;
+}
+.host-qr__box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  image-rendering: pixelated;
+}
+.host-qr__hint { font-size: 15px; }
+
+.host-codebox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.host-roomcode {
+  font-size: 64px;
+  font-weight: 1000;
+  letter-spacing: 6px;
+  line-height: 1;
+  margin-top: 6px;
+}
+
+.host-link {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+.host-link input {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 15px;
+}
+
+.host-cta {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+}
+.host-startgame {
+  padding: 14px 16px;
+  border-radius: 16px;
+  font-size: 21px;
+}
+.host-cta__hint { font-size: 15px; }
+
+.host-players__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.host-players__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.player-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  min-height: 78px;
+}
+.player-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(124,58,237,0.45);
+  background: rgba(124,58,237,0.10);
+}
+
+.player-card__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.avatar__emoji {
+  font-size: 34px;
+  line-height: 1;
+  transform: translateY(1px);
+}
+.avatar__letter {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.player-card__text {
+  min-width: 0;
+}
+.player-card__name {
+  font-weight: 900;
+  white-space: normal;
+  line-height: 1.15;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.player-card__meta {
+  font-size: 14px;
+}
+
+.player-card__status {
+  flex-shrink: 0;
+}
+
+.host-kick-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(239,68,68,0.45);
+  background: rgba(239,68,68,0.14);
+  color: var(--text);
+  font-weight: 900;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.host-kick-icon:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.host-vip-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--text);
+  font-weight: 900;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.host-vip-pill {
+  background: rgba(245, 158, 11, 0.22);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: var(--text);
+  font-weight: 800;
+}
+
+.player-card--new {
+  animation: playerPop 360ms ease-out both;
+}
+@keyframes playerPop {
+  from { transform: translateY(6px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@media (max-width: 980px) {
+  .host-join__grid {
+    grid-template-columns: 1fr;
+  }
+  .host-qr {
+    min-height: 0;
+  }
+  .host-roomcode {
+    font-size: 52px;
+    letter-spacing: 4px;
+  }
+}
+
+@media (max-width: 520px) {
+  .host-roomcode {
+    font-size: 42px;
+    letter-spacing: 3px;
+  }
+  .host-link {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   Fullscreen round background (viewport-round-active)
+   ========================================================================== */
+/* Полноэкранный режим поверх фото раунда: без карточки-«поля», контент на всю ширину */
+body.host.viewport-round-active .container {
+  max-width: none;
+  width: 100%;
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(12px, env(safe-area-inset-right));
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+body.host.viewport-round-active .host-shell {
+  justify-content: stretch;
+}
+
+body.host.viewport-round-active .host-main {
+  max-width: none;
+}
+
+body.host.viewport-round-active .card.host-stage {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+body.host.viewport-round-active .host-stage .stage-center {
+  min-height: calc(100vh - 24px);
+  min-height: calc(100dvh - 24px);
+  justify-content: center;
+  padding: 12px 0 24px;
+  box-sizing: border-box;
+}
+
+/* Высота сцены = почти весь экран: низ у края кадра, контент не схлопывается */
+body.host.host-quiz-viewing.viewport-round-active .host-stage .stage-center {
+  justify-content: flex-start;
+  padding-top: 0;
+  padding-bottom: 16px;
+  min-height: calc(100vh - 24px) !important;
+  min-height: calc(100dvh - 24px) !important;
+  max-height: calc(100vh - 24px) !important;
+  max-height: calc(100dvh - 24px) !important;
+  overflow: hidden;
+}
+body.host.host-quiz-viewing.viewport-round-active .host-stage .stage-center.stage-center--editing {
+  overflow: visible;
+}
+
+body.host.host-quiz-viewing.viewport-round-active .host-stage .timer-circle {
+  top: 0;
+  left: 0;
+}
+
+/* Поверх фото раунда: интро — заголовок по центру сцены */
+body.host.viewport-round-active .card.host-stage.host-stage--round-intro .stage-center {
+  justify-content: center;
+  padding-top: max(16px, env(safe-area-inset-top));
+}
+
+/* Узкий экран: сцена на почти весь экран, внутри — прокрутка если не влезает. */
+@media (max-width: 860px) {
+  body.host.host-quiz-viewing.viewport-round-active .host-stage .stage-center {
+    min-height: calc(100dvh - 52px) !important;
+    min-height: calc(100vh - 52px) !important;
+    max-height: calc(100dvh - 52px) !important;
+    max-height: calc(100vh - 52px) !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    align-items: center;
+  }
+
+  body.host.host-quiz-viewing.viewport-round-active .host-stage .host-stage__answers {
+    align-self: center;
+    width: 100%;
+  max-width: min(1320px, 100%);
+    margin-inline: auto;
+  }
+}
+
+body.host .stage-center--custom-layout,
+.preview-embed .stage-center--custom-layout {
+  position: relative;
+}
+body.host .stage-center--custom-layout [data-stage-applied] img:not(.host-stage__explanation-img),
+body.host .stage-center--custom-layout [data-stage-applied] video,
+.preview-embed .stage-center--custom-layout [data-stage-applied] img:not(.host-stage__explanation-img),
+.preview-embed .stage-center--custom-layout [data-stage-applied] video {
+  max-height: none;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+body.host .stage-center--custom-layout [data-stage-key="explanationImage"][data-stage-applied] img,
+.preview-embed .stage-center--custom-layout [data-stage-key="explanationImage"][data-stage-applied] img {
+  max-height: none;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+body.host .stage-center--editing,
+.preview-embed .stage-center--editing {
+  position: relative;
+  user-select: none;
+  cursor: default;
+  overflow: visible;
+}
+body.host .stage-center--editing #stageAnswers.grid-answers,
+body.host .stage-center--custom-layout #stageAnswers.grid-answers,
+body.host .stage-center--editing .host-stage__match,
+body.host .stage-center--custom-layout .host-stage__match,
+body.host .stage-center--editing .host-match__row,
+body.host .stage-center--custom-layout .host-match__row,
+.preview-embed .stage-center--editing #stageAnswers.grid-answers,
+.preview-embed .stage-center--custom-layout #stageAnswers.grid-answers,
+.preview-embed .stage-center--editing .host-stage__match,
+.preview-embed .stage-center--custom-layout .host-stage__match,
+.preview-embed .stage-center--editing .host-match__row,
+.preview-embed .stage-center--custom-layout .host-match__row {
+  display: contents;
+}
+body.host .stage-center--editing [data-stage-key],
+body.host .stage-center--editing [data-stage-key] img,
+body.host .stage-center--editing [data-stage-key] video,
+body.host .stage-center--editing [data-stage-key] iframe,
+body.host .stage-center--editing [data-stage-key] .stage-media__video-shell,
+body.host .stage-center--editing [data-stage-key] .stage-media__hide-wrap,
+body.host .stage-center--editing [data-stage-key] .host-match__img,
+body.host .stage-center--custom-layout [data-stage-applied],
+body.host .stage-center--custom-layout [data-stage-applied] img,
+body.host .stage-center--custom-layout [data-stage-applied] video,
+body.host .stage-center--custom-layout [data-stage-applied] iframe,
+.preview-embed .stage-center--editing [data-stage-key],
+.preview-embed .stage-center--editing [data-stage-key] img,
+.preview-embed .stage-center--editing [data-stage-key] video,
+.preview-embed .stage-center--editing [data-stage-key] iframe,
+.preview-embed .stage-center--editing [data-stage-key] .stage-media__video-shell,
+.preview-embed .stage-center--editing [data-stage-key] .stage-media__hide-wrap,
+.preview-embed .stage-center--editing [data-stage-key] .host-match__img,
+.preview-embed .stage-center--custom-layout [data-stage-applied],
+.preview-embed .stage-center--custom-layout [data-stage-applied] img,
+.preview-embed .stage-center--custom-layout [data-stage-applied] video,
+.preview-embed .stage-center--custom-layout [data-stage-applied] iframe {
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+body.host .stage-center--editing [data-stage-key="meta"],
+body.host .stage-center--custom-layout [data-stage-key="meta"][data-stage-applied],
+.preview-embed .stage-center--editing [data-stage-key="meta"],
+.preview-embed .stage-center--custom-layout [data-stage-key="meta"][data-stage-applied] {
+  min-width: min-content !important;
+  min-height: min-content !important;
+}
+body.host .host-layout-selected {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+  z-index: 20 !important;
+}
+body.host .host-layout-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #38bdf8;
+  border: 1px solid #0f172a;
+  border-radius: 1px;
+  z-index: 21;
+  box-sizing: border-box;
+}
+body.host .host-layout-handle--nw { left: -4px; top: -4px; cursor: nwse-resize; }
+body.host .host-layout-handle--n { left: 50%; top: -4px; margin-left: -4px; cursor: ns-resize; }
+body.host .host-layout-handle--ne { right: -4px; top: -4px; cursor: nesw-resize; }
+body.host .host-layout-handle--e { right: -4px; top: 50%; margin-top: -4px; cursor: ew-resize; }
+body.host .host-layout-handle--se { right: -4px; bottom: -4px; cursor: nwse-resize; }
+body.host .host-layout-handle--s { left: 50%; bottom: -4px; margin-left: -4px; cursor: ns-resize; }
+body.host .host-layout-handle--sw { left: -4px; bottom: -4px; cursor: nesw-resize; }
+body.host .host-layout-handle--w { left: -4px; top: 50%; margin-top: -4px; cursor: ew-resize; }
+
+body.host .host-layout-guide {
+  position: absolute;
+  pointer-events: none;
+  z-index: 25;
+  background: #f472b6;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.35);
+}
+body.host .host-layout-guide--x {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-0.5px);
+}
+body.host .host-layout-guide--y {
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-0.5px);
+}
+
+body.host .host-layout-inspector {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  width: min(340px, calc(100% - 16px));
+  z-index: 40;
+  pointer-events: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 8px 10px 10px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.94);
+  color: #f1f5f9;
+  font-size: 13px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  overflow: visible;
+}
+body.host .host-layout-inspector.is-dragging {
+  cursor: grabbing;
+}
+body.host .host-layout-inspector__grip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: -8px -10px 0;
+  padding: 8px 10px 6px;
+  cursor: grab;
+  touch-action: none;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+}
+body.host .host-layout-inspector.is-dragging .host-layout-inspector__grip {
+  cursor: grabbing;
+}
+body.host .host-layout-inspector__title {
+  font-weight: 600;
+  font-size: 12px;
+  color: #e2e8f0;
+  letter-spacing: 0.01em;
+}
+body.host .host-layout-inspector__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+body.host .host-layout-inspector__row--wrap {
+  flex-wrap: wrap;
+  width: 100%;
+}
+body.host .host-layout-inspector__btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+body.host .host-layout-inspector__icon,
+body.host .host-layout-inspector__chip {
+  height: 32px;
+  min-width: 32px;
+  padding: 4px 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+body.host .host-layout-inspector__icon.is-on,
+body.host .host-layout-inspector__chip.is-on {
+  background: #1e293b;
+  border-color: #38bdf8;
+  color: #e2e8f0;
+}
+body.host .host-layout-inspector__select,
+body.host .stage-font-select select {
+  flex: 1 1 140px;
+  min-width: 0;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 0 8px;
+}
+body.host .host-layout-inspector__row .stage-font-select {
+  flex: 1 1 140px;
+  min-width: 0;
+}
+body.host .stage-font-select__hint {
+  color: #94a3b8;
+  font-size: 11px;
+}
+body.host .stage-font-select__warn {
+  color: #fbbf24;
+  font-size: 11px;
+}
+body.host .host-layout-inspector__size {
+  width: 100%;
+  align-items: center;
+}
+body.host .host-layout-inspector__px {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+body.host .host-layout-inspector__px-name {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 600;
+}
+body.host .host-layout-inspector__px input[type='number'] {
+  width: 56px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 0 6px;
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+body.host .host-layout-inspector__px input[type='number']::-webkit-inner-spin-button,
+body.host .host-layout-inspector__px input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+body.host .host-layout-inspector__px input[type='number']:focus {
+  outline: 2px solid #38bdf8;
+  outline-offset: 1px;
+  border-color: #38bdf8;
+}
+body.host .host-layout-inspector__times,
+body.host .host-layout-inspector__px-unit {
+  color: #94a3b8;
+}
+body.host .host-layout-inspector__row--slider {
+  width: 100%;
+  justify-content: space-between;
+}
+body.host .host-layout-inspector__row--slider > span {
+  white-space: nowrap;
+}
+body.host .host-layout-inspector__slider {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+  max-width: 196px;
+}
+body.host .host-layout-inspector__nudge {
+  height: 28px;
+  min-width: 28px;
+  width: 28px;
+  padding: 0;
+  flex: none;
+}
+body.host .host-layout-inspector__nudge:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+body.host .host-layout-inspector__row input[type='range'] {
+  width: 84px;
+  min-width: 64px;
+  flex: 1 1 64px;
+}
+body.host .host-layout-inspector__row input[type='color'] {
+  width: 36px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+body.host .host-layout-inspector__bold {
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+}
+body.host .host-layout-inspector__bold:hover {
+  background: #334155;
+}
+body.host .host-layout-inspector__bold:active {
+  transform: scale(0.98);
+}
+body.host .host-layout-inspector__bold.is-on {
+  background: #1e293b;
+  border-color: #38bdf8;
+}
+body.host .host-game-menu__item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+body.host .host-game-menu__item:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+body.host .host-game-menu__item:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+

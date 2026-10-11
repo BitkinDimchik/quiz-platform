@@ -1,0 +1,703 @@
+/* ==========================================================================
+   ЕДИНЫЙ СТИЛЬ ДЛЯ ИГРЫ (HOST + PLAYER)
+   --------------------------------------------------------------------------
+   Требование: каждый элемент имеет СВОЙ класс, который полностью описан
+   (без переменных/наследования), и есть русские комментарии.
+   --------------------------------------------------------------------------
+   Эти классы навешиваются из JS на нужные элементы:
+   - host.js / player.js
+   ========================================================================== */
+
+/* -----------------------------
+   .stage-q — Текст вопроса / заголовок раунда
+   ----------------------------- */
+.stage-q,
+.stage-title,
+.stage-meta,
+.stage-round-title,
+.stage-lb-title,
+.stage-lb-sub,
+.stage-lb-row,
+.stage-correct-texts-title,
+.stage-correct-texts-item,
+.host-stage__explanation-label,
+.host-stage__explanation-text,
+.stage-answer,
+.stage-caption,
+.answer-caption,
+.timer-circle__text,
+.host-match__cap,
+.host-match__badge,
+.stage-text-answer-hint,
+.stage-text-answer-label,
+.stage-text-answer,
+.stage-btn-submit,
+body.player-game-viewing #gameCard #textAnswer,
+body.player-game-viewing #gameCard #textBlock label {
+  font-family: var(--stage-font-family, Figtree, system-ui, sans-serif) !important;
+}
+
+.stage-q,
+.stage-title,
+.stage-round-title,
+.stage-lb-title,
+.host-stage__explanation-text {
+  font-family: var(--stage-heading-font-family, var(--stage-font-family, Figtree, system-ui, sans-serif)) !important;
+}
+
+.stage-answer,
+.stage-caption,
+.answer-caption,
+.stage-correct-texts-item,
+.host-match__cap,
+.host-match__badge,
+.stage-text-answer,
+body.player-game-viewing #gameCard #textAnswer {
+  font-family: var(--stage-answers-font-family, var(--stage-font-family, Figtree, system-ui, sans-serif)) !important;
+}
+
+.stage-meta,
+.stage-lb-sub,
+.stage-text-answer-hint,
+.stage-text-answer-label,
+.stage-correct-texts-title,
+.host-stage__explanation-label {
+  font-family: var(--stage-labels-font-family, var(--stage-font-family, Figtree, system-ui, sans-serif)) !important;
+}
+
+.stage-q {
+  background: rgba(255, 255, 255, 0.144) !important;
+  border: 1px solid rgba(230, 238, 252, 0.12) !important;
+  backdrop-filter: blur(6px) !important;
+  color: rgba(0, 0, 0, 0.92) !important;
+  border-radius: 16px !important;
+  font-weight: 700 !important;
+  padding: 10px 14px !important;
+  /* Переносы строк из редактора (Enter) сохраняются на сцене */
+  white-space: pre-line !important;
+  /* Вопросы: целевой размер 34px (адаптивно), можно задать --stage-heading-font-size */
+  font-size: var(--stage-heading-font-size, clamp(28px, 4.4vmin, 34px)) !important;
+  text-shadow:
+    -1px 0 0 rgba(255,255,255,0.98),
+    1px 0 0 rgba(255,255,255,0.98),
+    0 -1px 0 rgba(255,255,255,0.98),
+    0 1px 0 rgba(255,255,255,0.98),
+    -1px -1px 0 rgba(255,255,255,0.92),
+    1px -1px 0 rgba(255,255,255,0.92),
+    -1px 1px 0 rgba(255,255,255,0.92),
+    1px 1px 0 rgba(255,255,255,0.92) !important;
+}
+
+/* -----------------------------
+   .stage-title — Крупный заголовок (интро квиза/раунда): целевой размер 72px
+   ----------------------------- */
+.stage-title {
+  background: rgba(255, 255, 255, 0.144) !important;
+  border: 1px solid rgba(230, 238, 252, 0.12) !important;
+  backdrop-filter: blur(6px) !important;
+  color: rgba(0, 0, 0, 0.92) !important;
+  border-radius: 16px !important;
+  font-weight: 700 !important;
+  font-size: var(--stage-heading-font-size, clamp(48px, 8vmin, 72px)) !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+  padding: 18px 28px !important;
+  text-shadow:
+    -1px 0 0 rgba(255,255,255,0.98),
+    1px 0 0 rgba(255,255,255,0.98),
+    0 -1px 0 rgba(255,255,255,0.98),
+    0 1px 0 rgba(255,255,255,0.98),
+    -1px -1px 0 rgba(255,255,255,0.92),
+    1px -1px 0 rgba(255,255,255,0.92),
+    -1px 1px 0 rgba(255,255,255,0.92),
+    1px 1px 0 rgba(255,255,255,0.92) !important;
+}
+
+/* -----------------------------
+   .stage-round-title — Название раунда у игрока (нужно крупнее, чем обычный заголовок)
+   ----------------------------- */
+.stage-round-title {
+  font-size: var(--stage-heading-font-size, clamp(60px, 11vmin, 92px)) !important;
+}
+
+/* -----------------------------
+   .stage-lb-title — Заголовок итогов (увеличенные внутренние отступы фона)
+   ----------------------------- */
+.stage-lb-title {
+  font-size: var(--stage-heading-font-size, clamp(42px, 6.6vmin, 52px)) !important;
+  padding: 14px 18px !important;
+}
+
+/* -----------------------------
+   .stage-meta — Описание раунда / служебный текст под заголовком
+   ----------------------------- */
+.stage-meta:empty,
+#stageMeta:empty {
+  display: none !important;
+}
+
+.stage-meta {
+  background: rgba(255, 255, 255, 0.144) !important;
+  padding: 10px 16px !important;
+  border: 1px solid rgba(208, 211, 218, 0.12) !important;
+  backdrop-filter: blur(6px) !important;
+  color: rgba(0, 0, 0, 0.92) !important;
+  border-radius: 16px !important;
+  font-weight: 700 !important;
+  /* Служебные подписи: целевой размер 30px */
+  font-size: var(--stage-labels-font-size, clamp(26px, 4.2vmin, 32px)) !important;
+  text-shadow:
+    -1px 0 0 rgba(255,255,255,0.98),
+    1px 0 0 rgba(255,255,255,0.98),
+    0 -1px 0 rgba(255,255,255,0.98),
+    0 1px 0 rgba(255,255,255,0.98),
+    -1px -1px 0 rgba(255,255,255,0.92),
+    1px -1px 0 rgba(255,255,255,0.92),
+    -1px 1px 0 rgba(255,255,255,0.92),
+    1px 1px 0 rgba(255,255,255,0.92) !important;
+}
+
+/* -----------------------------
+   .stage-lb-sub — Подзаголовок итогов (увеличенные внутренние отступы фона)
+   ----------------------------- */
+.stage-lb-sub {
+  font-size: var(--stage-labels-font-size, clamp(24px, 4vmin, 32px)) !important;
+  padding: 12px 16px !important;
+}
+
+/* -----------------------------
+   .stage-answer — Карточка варианта ответа (и текстового, и визуального)
+   ----------------------------- */
+.stage-answer {
+  background: rgba(255, 255, 255, 0.144) !important;
+  border: 1px solid rgba(230, 238, 252, 0.12) !important;
+  backdrop-filter: blur(6px) !important;
+  color: rgba(0, 0, 0, 0.92) !important;
+  border-radius: 16px !important;
+  font-weight: 800 !important;
+  /* Текст в вариантах ответа: целевой размер 32px */
+  font-size: var(--stage-answers-font-size, clamp(26px, 4.4vmin, 34px)) !important;
+  text-shadow:
+    -1px 0 0 rgba(255,255,255,0.98),
+    1px 0 0 rgba(255,255,255,0.98),
+    0 -1px 0 rgba(255,255,255,0.98),
+    0 1px 0 rgba(255,255,255,0.98),
+    -1px -1px 0 rgba(255,255,255,0.92),
+    1px -1px 0 rgba(255,255,255,0.92),
+    -1px 1px 0 rgba(255,255,255,0.92),
+    1px 1px 0 rgba(255,255,255,0.92) !important;
+}
+
+/* -----------------------------
+   Выбор игрока ДО отправки (подсветка выбранных вариантов)
+   ----------------------------- */
+.stage-answer.selected {
+  outline: 3px solid rgba(124,58,237,0.95) !important;
+  outline-offset: 0 !important;
+  background: rgba(124,58,237,0.20) !important;
+}
+
+body.player-game-viewing #answers .answer:active:not(.disabled):not(.correct):not(.wrong) {
+  outline: 3px solid rgba(124,58,237,0.95);
+  outline-offset: 0;
+  background: rgba(124,58,237,0.20);
+}
+
+.stage-answer.answer--visual.selected {
+  outline: 3px solid rgba(124,58,237,0.95) !important;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.35) inset !important;
+}
+
+/* -----------------------------
+   Правильный/неправильный ответ (цвет фона)
+   - .correct: правильный вариант (делаем зелёную подложку)
+   - .wrong: выбранный игроком неверный вариант (делаем красную подложку)
+   ----------------------------- */
+.stage-answer.correct {
+  background: rgba(34, 197, 94, 0.28) !important; /* зелёный */
+  border-color: rgba(34, 197, 94, 0.55) !important;
+  outline: 4px solid rgba(34, 197, 94, 0.92) !important;
+  outline-offset: 0 !important;
+}
+
+.stage-answer.wrong {
+  background: rgba(239, 68, 68, 0.26) !important; /* красный */
+  border-color: rgba(239, 68, 68, 0.55) !important;
+  outline: 4px solid rgba(239, 68, 68, 0.92) !important;
+  outline-offset: 0 !important;
+}
+
+/* Для игрока есть очень специфичные правила в app.css, которые задают фон ответов через !important.
+   Этот блок гарантированно перебивает их, когда ответ имеет stage-answer + correct/wrong. */
+body.player-game-viewing #answers .stage-answer.correct,
+#gameCard.player-game-viewing #answers .stage-answer.correct,
+#gameCard #answers .stage-answer.correct {
+  background: rgba(34, 197, 94, 0.28) !important;
+  border-color: rgba(34, 197, 94, 0.55) !important;
+  outline: 4px solid rgba(34, 197, 94, 0.92) !important;
+  outline-offset: 0 !important;
+}
+
+body.player-game-viewing #answers .stage-answer.wrong,
+#gameCard.player-game-viewing #answers .stage-answer.wrong,
+#gameCard #answers .stage-answer.wrong {
+  background: rgba(239, 68, 68, 0.26) !important;
+  border-color: rgba(239, 68, 68, 0.55) !important;
+  outline: 4px solid rgba(239, 68, 68, 0.92) !important;
+  outline-offset: 0 !important;
+}
+
+/*
+  После раскрытия: все правильные варианты — зелёные.
+  - .correct.selected — игрок отметил этот правильный вариант: доп. кольцо (отличить от просто «правильно»).
+  - .stage-answer--missed-correct — правильный, но игрок его не выбрал (неполный ответ).
+ */
+body.player-game-viewing #answers .stage-answer.correct.selected,
+#gameCard.player-game-viewing #answers .stage-answer.correct.selected,
+#gameCard #answers .stage-answer.correct.selected {
+  background: rgba(34, 197, 94, 0.34) !important;
+  border-color: rgba(34, 197, 94, 0.65) !important;
+  outline: 4px solid rgba(34, 197, 94, 0.92) !important;
+  outline-offset: 0 !important;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.95),
+    0 0 0 7px rgba(124, 58, 237, 0.88) !important;
+}
+
+body.player-game-viewing #answers .stage-answer.correct.stage-answer--missed-correct,
+#gameCard.player-game-viewing #answers .stage-answer.correct.stage-answer--missed-correct,
+#gameCard #answers .stage-answer.correct.stage-answer--missed-correct {
+  background: rgba(34, 197, 94, 0.14) !important;
+  border-color: rgba(34, 197, 94, 0.4) !important;
+  outline: 3px dashed rgba(34, 197, 94, 0.78) !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+
+body.player-game-viewing #answers .stage-answer.correct.stage-answer--missed-correct .stage-caption,
+body.player-game-viewing #answers .stage-answer.correct.stage-answer--missed-correct .answer-caption,
+#gameCard.player-game-viewing #answers .stage-answer.correct.stage-answer--missed-correct .stage-caption,
+#gameCard.player-game-viewing #answers .stage-answer.correct.stage-answer--missed-correct .answer-caption {
+  background: rgba(34, 197, 94, 0.14) !important;
+  border-color: rgba(34, 197, 94, 0.4) !important;
+}
+
+body.player-game-viewing #answers .stage-answer.correct.selected .stage-caption,
+body.player-game-viewing #answers .stage-answer.correct.selected .answer-caption,
+#gameCard.player-game-viewing #answers .stage-answer.correct.selected .stage-caption,
+#gameCard.player-game-viewing #answers .stage-answer.correct.selected .answer-caption {
+  background: rgba(34, 197, 94, 0.34) !important;
+  border-color: rgba(34, 197, 94, 0.65) !important;
+}
+
+/* Если у визуального ответа есть подпись — красим и её фон */
+.stage-answer.correct .stage-caption,
+.stage-answer.correct .answer-caption {
+  background: rgba(34, 197, 94, 0.28) !important;
+  border-color: rgba(34, 197, 94, 0.55) !important;
+}
+
+.stage-answer.wrong .stage-caption,
+.stage-answer.wrong .answer-caption {
+  background: rgba(239, 68, 68, 0.26) !important;
+  border-color: rgba(239, 68, 68, 0.55) !important;
+}
+
+/* -----------------------------
+   .stage-text-answer-label — Подпись «Ваш ответ» у игрока
+   ----------------------------- */
+.stage-text-answer-label,
+body.player-game-viewing #gameCard #textBlock label {
+  display: inline-block !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 0 12px !important;
+  padding: 10px 16px !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.144) !important;
+  border: 1px solid rgba(230, 238, 252, 0.12) !important;
+  backdrop-filter: blur(6px) !important;
+  color: rgba(0, 0, 0, 0.92) !important;
+  -webkit-text-fill-color: rgba(0, 0, 0, 0.92) !important;
+  font-weight: 700 !important;
+  font-size: var(--stage-labels-font-size, clamp(26px, 4.2vmin, 32px)) !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.02em !important;
+  text-align: left !important;
+  text-shadow:
+    -1px 0 0 rgba(255,255,255,0.98),
+    1px 0 0 rgba(255,255,255,0.98),
+    0 -1px 0 rgba(255,255,255,0.98),
+    0 1px 0 rgba(255,255,255,0.98),
+    -1px -1px 0 rgba(255,255,255,0.92),
+    1px -1px 0 rgba(255,255,255,0.92),
+    -1px 1px 0 rgba(255,255,255,0.92),
+    1px 1px 0 rgba(255,255,255,0.92) !important;
+}
+
+/* -----------------------------
+   .stage-text-answer — Поле ввода ответа игрока
+   ----------------------------- */
+.stage-text-answer,
+body.player-game-viewing #gameCard #textAnswer {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  field-sizing: content;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 8px 14px !important;
+  resize: none !important;
+  overflow: hidden !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.144) !important;
+  border: 1px solid rgba(230, 238, 252, 0.12) !important;
+  backdrop-filter: blur(6px) !important;
+  color: rgba(0, 0, 0, 0.92) !important;
+  -webkit-text-fill-color: rgba(0, 0, 0, 0.92) !important;
+  caret-color: rgba(0, 0, 0, 0.92) !important;
+  font-weight: 800 !important;
+  font-size: var(--stage-answers-font-size, clamp(26px, 4.4vmin, 34px)) !important;
+  line-height: 1.15 !important;
+  text-align: left !important;
+  opacity: 1 !important;
+  touch-action: manipulation !important;
+  text-shadow:
+    -1px 0 0 rgba(255,255,255,0.98),
+    1px 0 0 rgba(255,255,255,0.98),
+    0 -1px 0 rgba(255,255,255,0.98),
+    0 1px 0 rgba(255,255,255,0.98),
+    -1px -1px 0 rgba(255,255,255,0.92),
+    1px -1px 0 rgba(255,255,255,0.92),
+    -1px 1px 0 rgba(255,255,255,0.92),
+    1px 1px 0 rgba(255,255,255,0.92) !important;
+}
+
+.stage-text-answer:disabled,
+body.player-game-viewing #gameCard #textAnswer:disabled {
+  opacity: 1 !important;
+  color: rgba(0, 0, 0, 0.92) !important;
+  -webkit-text-fill-color: rgba(0, 0, 0, 0.92) !important;
+}
+
+.stage-text-answer::placeholder,
+body.player-game-viewing #gameCard #textAnswer::placeholder {
+  color: rgba(0, 0, 0, 0.55) !important;
+  -webkit-text-fill-color: rgba(0, 0, 0, 0.55) !important;
+  opacity: 1 !important;
+  text-shadow:
+    -1px 0 0 rgba(255,255,255,0.98),
+    1px 0 0 rgba(255,255,255,0.98),
+    0 -1px 0 rgba(255,255,255,0.98),
+    0 1px 0 rgba(255,255,255,0.98),
+    -1px -1px 0 rgba(255,255,255,0.92),
+    1px -1px 0 rgba(255,255,255,0.92),
+    -1px 1px 0 rgba(255,255,255,0.92),
+    1px 1px 0 rgba(255,255,255,0.92) !important;
+}
+
+.stage-text-answer:focus,
+body.player-game-viewing #gameCard #textAnswer:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.95) !important;
+  outline-offset: 0 !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Поле текстового ответа игрока после раскрытия (как у .stage-answer correct/wrong) */
+body.player-game-viewing #gameCard #textAnswer.stage-text-answer--correct {
+  background: rgba(34, 197, 94, 0.28) !important;
+  border-color: rgba(34, 197, 94, 0.55) !important;
+  outline: 3px solid rgba(34, 197, 94, 0.92) !important;
+  outline-offset: 0 !important;
+}
+
+body.player-game-viewing #gameCard #textAnswer.stage-text-answer--wrong {
+  background: rgba(239, 68, 68, 0.26) !important;
+  border-color: rgba(239, 68, 68, 0.55) !important;
+  outline: 3px solid rgba(239, 68, 68, 0.92) !important;
+  outline-offset: 0 !important;
+}
+
+/* -----------------------------
+   .stage-caption — Подпись под картинкой в визуальных ответах
+   ----------------------------- */
+.stage-caption {
+  background: rgba(255, 255, 255, 0.144) !important;
+  border: 1px solid rgba(230, 238, 252, 0.12) !important;
+  backdrop-filter: blur(6px) !important;
+  color: rgba(0, 0, 0, 0.92) !important;
+  border-radius: 16px !important;
+  font-weight: 800 !important;
+  /* Подпись под картинкой */
+  font-size: var(--stage-answers-font-size, clamp(26px, 4.4vmin, 34px)) !important;
+  text-shadow:
+    -1px 0 0 rgba(255,255,255,0.98),
+    1px 0 0 rgba(255,255,255,0.98),
+    0 -1px 0 rgba(255,255,255,0.98),
+    0 1px 0 rgba(255,255,255,0.98),
+    -1px -1px 0 rgba(255,255,255,0.92),
+    1px -1px 0 rgba(255,255,255,0.92),
+    -1px 1px 0 rgba(255,255,255,0.92),
+    1px 1px 0 rgba(255,255,255,0.92) !important;
+}
+
+/* -----------------------------
+   .stage-lb-row — Строка в таблице итогов (промежуточных и финальных)
+   ----------------------------- */
+.stage-lb-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+  margin-bottom: 8px !important;
+  background: rgba(0, 0, 0, 0.137) !important;
+  border: 1px solid rgba(230, 238, 252, 0.12) !important;
+  border-radius: 14px !important;
+  backdrop-filter: blur(6px) !important;
+  color: rgba(0, 0, 0, 0.92) !important;
+  text-shadow:
+    -1px 0 0 rgba(255,255,255,0.98),
+    1px 0 0 rgba(255,255,255,0.98),
+    0 -1px 0 rgba(255,255,255,0.98),
+    0 1px 0 rgba(255,255,255,0.98),
+    -1px -1px 0 rgba(255,255,255,0.92),
+    1px -1px 0 rgba(255,255,255,0.92),
+    -1px 1px 0 rgba(255,255,255,0.92),
+    1px 1px 0 rgba(255,255,255,0.92) !important;
+}
+
+/* -----------------------------
+   .stage-btn-submit — Кнопка "Отправить" у игрока
+   ----------------------------- */
+.stage-btn-submit {
+  background: #000 !important;
+  border: 2px solid #fff !important;
+  color: #fff !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.2px !important;
+  /* Явно задаём размер, чтобы не зависеть от окружения */
+  font-size: 20px !important;
+  line-height: 1.15 !important;
+  padding: 14px 18px !important;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 18px rgba(255,255,255,0.75),
+    0 10px 26px rgba(0,0,0,0.35) !important;
+}
+
+/* В app.css есть правила для #btnSubmit с более высокой специфичностью.
+   Этот блок гарантированно переопределяет их, когда кнопке навешан класс .stage-btn-submit. */
+body.player-game-viewing #gameCard #btnSubmit.stage-btn-submit,
+#gameCard.player-game-viewing #btnSubmit.stage-btn-submit,
+body.player-game-viewing #btnSubmit.stage-btn-submit {
+  background: #000 !important;
+  border: 2px solid #fff !important;
+  color: #fff !important;
+  font-weight: 900 !important;
+  font-size: 18px !important;
+  line-height: 1.15 !important;
+  padding: 10px 14px !important;
+  /* Убираем белую обводку из app.css, делаем тёмную (читабельнее на белом тексте). */
+  text-shadow:
+    -1px 0 0 rgba(0,0,0,0.95),
+    1px 0 0 rgba(0,0,0,0.95),
+    0 -1px 0 rgba(0,0,0,0.95),
+    0 1px 0 rgba(0,0,0,0.95),
+    -1px -1px 0 rgba(0,0,0,0.85),
+    1px -1px 0 rgba(0,0,0,0.85),
+    -1px 1px 0 rgba(0,0,0,0.85),
+    1px 1px 0 rgba(0,0,0,0.85) !important;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 18px rgba(255,255,255,0.75),
+    0 10px 26px rgba(0,0,0,0.35) !important;
+}
+
+/* -----------------------------
+   .stage-btn-submit--disabled — Состояние disabled для кнопки игрока
+   ----------------------------- */
+.stage-btn-submit--disabled {
+  opacity: 0.65 !important;
+}
+
+/* -----------------------------
+   .stage-no-outline — Снять обводку текста (например, "В комнату ожидания" у игрока)
+   ----------------------------- */
+.stage-no-outline {
+  text-shadow: none !important;
+}
+
+/* -----------------------------
+   .stage-text-answer-hint — Подсказка для текстового вопроса (когда вариантов нет)
+   ----------------------------- */
+.stage-text-answer-hint {
+  display: inline-block !important;
+  padding: 12px 16px !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.144) !important;
+  border: 1px solid rgba(208, 211, 218, 0.12) !important;
+  backdrop-filter: blur(6px) !important;
+  color: rgba(0, 0, 0, 0.92) !important;
+  font-weight: 700 !important;
+  font-size: var(--stage-labels-font-size, clamp(24px, 4vmin, 32px)) !important;
+  text-shadow:
+    -1px 0 0 rgba(255,255,255,0.98),
+    1px 0 0 rgba(255,255,255,0.98),
+    0 -1px 0 rgba(255,255,255,0.98),
+    0 1px 0 rgba(255,255,255,0.98),
+    -1px -1px 0 rgba(255,255,255,0.92),
+    1px -1px 0 rgba(255,255,255,0.92),
+    -1px 1px 0 rgba(255,255,255,0.92),
+    1px 1px 0 rgba(255,255,255,0.92) !important;
+}
+
+/* -----------------------------
+   Текстовые ответы: заголовок + элементы списка.
+   ВАЖНО: фон/обводку/цвет/шрифт берём из .stage-q (как у текста вопроса),
+   здесь задаём только геометрию (padding/margins), чтобы выглядело 1:1.
+   ----------------------------- */
+.stage-correct-texts-title {
+  display: inline-block !important;
+  padding: 10px 14px !important;
+  margin-top: 10px !important;
+  font-size: var(--stage-labels-font-size, clamp(24px, 3.8vmin, 30px)) !important;
+}
+
+.stage-correct-texts-item {
+  display: inline-block !important;
+  padding: 10px 14px !important;
+  margin-top: 8px !important;
+  font-size: var(--stage-answers-font-size, clamp(26px, 4.1vmin, 32px)) !important;
+}
+
+/* -----------------------------
+   .stage-center — колонка сцены (host + player)
+   ----------------------------- */
+.stage-center {
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  /* 120px круг + запас на обводку halo */
+  --stage-timer-gutter: 140px;
+}
+
+.stage-center:not(.stage-center--custom-layout) {
+  container-type: inline-size;
+  container-name: stage;
+}
+
+/* -----------------------------
+   .timer-circle — круговой таймер в левом верхнем углу сцены
+   ----------------------------- */
+.timer-circle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 8;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+@container stage (max-width: 720px) {
+  .timer-circle {
+    width: 88px;
+    height: 88px;
+  }
+  .timer-circle__text {
+    font-size: 20px;
+  }
+}
+
+@container stage (max-width: 520px) {
+  .timer-circle {
+    width: 64px;
+    height: 64px;
+  }
+  .timer-circle__text {
+    font-size: 16px;
+  }
+}
+
+.timer-circle__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.timer-circle__halo {
+  fill: none;
+  pointer-events: none;
+}
+
+.timer-circle__halo--black {
+  stroke: #000;
+  stroke-width: 14;
+}
+
+.timer-circle__halo--white {
+  stroke: #fff;
+  stroke-width: 12;
+}
+
+.timer-circle__track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.14);
+  stroke-width: 10;
+}
+
+.timer-circle__progress {
+  fill: none;
+  stroke: rgba(59, 130, 246, 0.95);
+  stroke-width: 10;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: none;
+}
+
+.timer-circle__text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0, 0, 0, 0.92) !important;
+  font-weight: 950;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  pointer-events: none;
+  text-shadow:
+    -1px 0 0 rgba(255, 255, 255, 0.98),
+    1px 0 0 rgba(255, 255, 255, 0.98),
+    0 -1px 0 rgba(255, 255, 255, 0.98),
+    0 1px 0 rgba(255, 255, 255, 0.98),
+    -1px -1px 0 rgba(255, 255, 255, 0.92),
+    1px -1px 0 rgba(255, 255, 255, 0.92),
+    -1px 1px 0 rgba(255, 255, 255, 0.92),
+    1px 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+/* Таймеры с обводкой в fullscreen-предпросмотре раунда */
+body.viewport-round-active .timer-circle__text,
+body.viewport-round-active #timerCorner,
+body.viewport-round-active #timer {
+  text-shadow:
+    -1px 0 0 rgba(255, 255, 255, 0.98),
+    1px 0 0 rgba(255, 255, 255, 0.98),
+    0 -1px 0 rgba(255, 255, 255, 0.98),
+    0 1px 0 rgba(255, 255, 255, 0.98),
+    -1px -1px 0 rgba(255, 255, 255, 0.92),
+    1px -1px 0 rgba(255, 255, 255, 0.92),
+    -1px 1px 0 rgba(255, 255, 255, 0.92),
+    1px 1px 0 rgba(255, 255, 255, 0.92);
+}

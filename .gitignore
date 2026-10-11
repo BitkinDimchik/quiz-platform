@@ -1,0 +1,28 @@
+target/
+node_modules/
+dist/
+web/dist/
+web/node_modules/
+.absolute-work/
+.agents/
+.cursor/
+data/
+logs/
+RUNNING_PID
+.idea/
+*.iml
+.bsp/
+.env
+*.tsbuildinfo
+
+# Локальная SQLite (WAL: -wal / -shm)
+data/*.sqlite
+data/*.sqlite-*
+
+# Portable Node.js downloaded by Quiz.exe
+runtime/node/
+runtime/*.zip
+runtime/tmp-node/
+
+# Загруженные пользователями медиа (создаются при upload/audio, upload/video, import)
+public/

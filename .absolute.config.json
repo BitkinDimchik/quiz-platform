@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "conventions": {
+    "packageManager": "npm",
+    "languages": ["typescript"],
+    "test": "npm run test:e2e",
+    "build": "npm run build",
+    "defaultBranch": "main",
+    "ui": {
+      "framework": "react",
+      "styling": "tailwind",
+      "componentLib": "none"
+    },
+    "docs": {
+      "stack": "markdown",
+      "dir": "docs"
+    }
+  },
+  "preferences": {
+    "outputStyle": "terse",
+    "autonomy": "gate-all",
+    "tdd": "strict",
+    "specDir": "docs/plans",
+    "boardTracking": "gitignored",
+    "families": ["build"]
+  }
+}
